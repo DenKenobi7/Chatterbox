@@ -1,3 +1,4 @@
+using Chatterbox.Infrastructure.DBConnection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Tokens;
@@ -9,7 +10,15 @@ var builder = WebApplication.CreateBuilder(args);
 /*builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));*/
 builder.Services.AddCors();
-builder.Services.AddAuthentication(options =>
+builder.Services.RegisterMongoDBInfrastructure(builder.Configuration);
+
+/*services.AddDbContext<StoreDBContext>(options =>
+                options.UseSqlServer(configuration.GetConnectionString("StoreSQLServerConnection"), x => x.MigrationsAssembly(typeof(RegisterInfrastructureServices).Assembly.GetName().Name)));
+services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<StoreDBContext>()
+    .AddDefaultTokenProviders();*/
+
+/*builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
         options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -25,7 +34,7 @@ builder.Services.AddAuthentication(options =>
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("7S79jvOkEdwoRqHx"))
         };
     });
-
+*/
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
