@@ -4,7 +4,10 @@ using Chatterbox.WebAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace Chatterbox.WebAPI.Controllers
 {
@@ -24,17 +27,39 @@ namespace Chatterbox.WebAPI.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel userModel)
         {
-            ApplicationUser appUser = await _userManager.FindByEmailAsync(userModel.Email);
-            if (appUser != null)
+            ApplicationUser user = await _userManager.FindByEmailAsync(userModel.Email);
+            if (user != null && await _userManager.CheckPasswordAsync(user, userModel.Password))
             {
-                SignInResult result = await _signInManager.PasswordSignInAsync(appUser, userModel.Password, false, false);
-                if (result.Succeeded)
+                var userRoles = await _userManager.GetRolesAsync(user);
+                var authClaims = new List<Claim>
                 {
-                    return Ok();
-
+                    new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                };
+                foreach (var userRole in userRoles)
+                {
+                    authClaims.Add(new Claim(ClaimTypes.Role, userRole));
                 }
+                var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("7S79jvOkEdwoRqHx"));
+                var token = new JwtSecurityToken(
+                    expires: DateTime.Now.AddMinutes(30),
+                    claims: authClaims,
+                    signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+                    );
+
+                HttpContext.Response.Cookies.Append(".AspNetCore.Application.Id", new JwtSecurityTokenHandler().WriteToken(token),
+                    new CookieOptions
+                    {
+                        MaxAge = TimeSpan.FromMinutes(30)
+                    });
+                return Ok(new
+                {
+                    expiration = token.ValidTo,
+                    username = user.UserName
+                });
             }
-            return Unauthorized("Email or password isn't correct");
+            return Unauthorized();
+
         }
 
         [AllowAnonymous]

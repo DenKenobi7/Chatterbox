@@ -7,7 +7,7 @@ using Microsoft.Identity.Web.Resource;
 
 namespace Chatterbox.WebAPI.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class MessageController : ControllerBase

@@ -104,10 +104,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors(x => x
-                       .AllowAnyOrigin()
-                       .AllowAnyMethod()
-                       .AllowAnyHeader());
+app.UseCors(x => x.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader());
 
 app.UseCookiePolicy(new CookiePolicyOptions
 {
@@ -126,7 +125,6 @@ app.Use(async (context, next) =>
     {
         context.Request.Headers.Add("Authorization", "Bearer " + token);
     }
-
     await next();
 });
 
