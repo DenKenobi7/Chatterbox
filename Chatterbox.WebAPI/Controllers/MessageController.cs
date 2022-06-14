@@ -12,11 +12,6 @@ namespace Chatterbox.WebAPI.Controllers
     [Route("[controller]")]
     public class MessageController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
-
         private readonly IMessageRepository _repository;
 
         public MessageController(IMessageRepository repo)
@@ -41,6 +36,7 @@ namespace Chatterbox.WebAPI.Controllers
         public async Task<IActionResult> DeleteMessage([FromRoute] string id)
         {
             var result = await _repository.DeleteAsync(id);
+            
             return StatusCode(200);
         }
     }

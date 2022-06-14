@@ -1,7 +1,7 @@
 ﻿using Chatterbox.Infrastructure.DBConnection;
 using Chatterbox.Infrastructure.Interfaces.Interfaces;
 using Chatterbox.Infrastructure.Models;
-using Chatterbox.Infrastructure.Providers;
+using Chatterbox.Infrastructure.Shared.Providers;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
