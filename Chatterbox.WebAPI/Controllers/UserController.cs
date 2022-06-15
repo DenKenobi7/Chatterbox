@@ -59,7 +59,7 @@ namespace Chatterbox.WebAPI.Controllers
                     username = user.UserName
                 });
             }
-            return Unauthorized();
+            return Unauthorized(new { ErrorMessage = "Email or Password is invalid"});
 
         }
 
@@ -78,7 +78,7 @@ namespace Chatterbox.WebAPI.Controllers
             IdentityResult result = await _userManager.CreateAsync(appUser, registerModel.Password);
             if (!result.Succeeded)
             {
-                return Unauthorized("Something went wrong while registering");
+                return Unauthorized(new { ErrorMessage = "Something went wrong while registering" });
             }
 
             await _userManager.AddToRoleAsync(appUser, Enums.Roles.User.ToString());
