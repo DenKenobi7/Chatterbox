@@ -13,5 +13,6 @@ namespace Chatterbox.Infrastructure.Models.Identity
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public IList<string> Chats { get; set; }
     }
 }

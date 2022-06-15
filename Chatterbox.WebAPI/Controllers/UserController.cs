@@ -12,7 +12,7 @@ using System.Text;
 namespace Chatterbox.WebAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("auth")]
     [Authorize]
     public class UserController : ControllerBase
     {
@@ -34,11 +34,12 @@ namespace Chatterbox.WebAPI.Controllers
                 var authClaims = new List<Claim>
                 {
                     new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim("usId", user.Id.ToString())
                 };
                 foreach (var userRole in userRoles)
                 {
-                    authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+                    authClaims.Add(new Claim("role", userRole));
                 }
                 var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("7S79jvOkEdwoRqHx"));
                 var token = new JwtSecurityToken(

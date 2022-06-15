@@ -20,6 +20,5 @@ namespace Chatterbox.Infrastructure.Models
         public DateTime? DelieveredAt { get; set; } = null;
 
         public string SenderId { get; set; } = null!;
-        public string RecipientId { get; set; } = null!;
     }
 }
