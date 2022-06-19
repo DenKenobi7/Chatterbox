@@ -15,8 +15,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Chatterbox.Core\Chatterbox.Core.csproj" />
     <ProjectReference Include="..\Chatterbox.Infrastructure\Chatterbox.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Hubs\" />
   </ItemGroup>
 
 </Project>

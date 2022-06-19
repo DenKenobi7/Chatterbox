@@ -16,7 +16,7 @@ namespace Chatterbox.Infrastructure.DBConnection
             services.Configure<MongoDBSettings>(configuration.GetSection("MongoDBConnnection"));
             services.AddSingleton<IMongoDBSettings>(serviceProvider =>
                 serviceProvider.GetRequiredService<IOptions<MongoDBSettings>>().Value);
-            services.AddScoped<IMessageRepository, MessageRepository>();
+            services.AddScoped<IChatRepository, ChatRepository>();
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         }
         public static void RegisterIdentityMongoStorage(this IdentityBuilder builder, ConfigurationManager configuration)

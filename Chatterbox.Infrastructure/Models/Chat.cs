@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Chatterbox.Infrastructure.Attributes;
+using Chatterbox.Infrastructure.Models.Identity;
 
 namespace Chatterbox.Infrastructure.Models
 {
+    [BsonCollection("Chats")]
     public class Chat : BaseEntity
     {
-        public IList<string?> Members { get; set; }
-        public IList<Message> Messages { get; set; }
+        public List<ApplicationUser> Members { get; set; } = new();
+        public List<Message> Messages { get; set; } = new();
     }
 }

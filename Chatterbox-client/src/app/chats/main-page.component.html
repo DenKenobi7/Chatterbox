@@ -1,0 +1,12 @@
+<app-header></app-header>
+<div class="row" style="width:100%;">
+    <aside class="col-3">
+        <aside-chats [chats]="chats" (onSelectedChat)="onSelectedChat($event)" [initialChat]="selectedChat"></aside-chats>
+    </aside>
+    <main class="col-6">
+        <messages style="width:100%" [chat]="detailedChat"></messages>
+    </main>
+    <aside class="col-3">
+        <aside-users [users]="users" (onSelectedUser)="onSelectedUser($event)"></aside-users>
+    </aside>
+</div>

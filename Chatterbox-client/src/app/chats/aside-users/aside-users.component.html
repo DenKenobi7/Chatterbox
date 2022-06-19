@@ -1,0 +1,12 @@
+<div>
+    <h3>Available users</h3>
+    <p-listbox [options]="users" [(ngModel)]="selectedUser" (ngModelChange)="onSelectionChanged()" [multiple]="false" optionLabel="name" [listStyle]="{'max-height':'250px'}">
+        <ng-template let-user pTemplate="item">
+            <div class="d-flex" class="user-item" style="height: 3em; width:100%">
+                <fa-icon [icon]="['fas', 'user']"></fa-icon>
+                <span>{{user.userName}}</span>
+            </div>
+        </ng-template>
+    </p-listbox>
+
+</div>

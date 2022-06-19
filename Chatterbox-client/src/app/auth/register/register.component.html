@@ -1,0 +1,100 @@
+<div class="container" style="height: 100vh;">
+    <div class="row align-items-center h-100">
+        <div class="mx-auto" style="max-width: 300px;">
+            <p-panel header="Register" >
+                <form [formGroup]="form" (ngSubmit)="register()">
+                    <div >
+                        <label class="col-12" for="email">Email</label>
+                        <input class="col-12" pInputText id="email" 
+                            [ngClass]="{
+                                'ng-invalid': form.controls['email'].errors,
+                                'ng-dirty': form.controls['email'].dirty
+                            }"
+                            formControlName="email"/>
+                        <small class="p-error col-12" *ngIf="form.controls['email'].touched 
+                            && form.controls['email'].errors
+                            && form.controls['email'].errors['required']">Email is required</small>
+                        <small class="p-error col-12" *ngIf="form.controls['email'].touched 
+                            && form.controls['email'].errors
+                            && form.controls['email'].errors['email']">Wrong Email</small>
+                    </div>
+                    <div >
+                        <label class="col-12" for="userName">User Name</label>
+                        <input class="col-12" pInputText id="userName" 
+                            [ngClass]="{
+                                'ng-invalid': form.controls['userName'].errors,
+                                'ng-dirty': form.controls['userName'].dirty
+                            }"
+                            formControlName="userName"/>
+                        <small class="p-error col-12" *ngIf="form.controls['userName'].touched 
+                            && form.controls['userName'].errors
+                            && form.controls['userName'].errors['required']">User Name is required</small>
+                        
+                    </div>
+                    <div formGroupName="passwords">
+                        <label class="col-12" for="password">Password</label>
+                        <input class="col-12" pInputText id="password" type="password"
+                        [ngClass]="{
+                            'ng-invalid': form.get('passwords')?.get('password')?.errors,
+                            'ng-dirty': form.get('passwords')?.get('password')?.dirty
+                        }"
+                        formControlName="password"/>
+                        <small class="p-error col-12" *ngIf="form.get('passwords')?.get('password')?.touched 
+                            && form.get('passwords')?.get('password')?.errors
+                            && form.get('passwords')?.get('password')?.errors!['required']">Password is required</small>
+                        <small class="p-error col-12" *ngIf="form.get('passwords')?.get('password')?.touched 
+                            && form.get('passwords')?.get('password')?.errors
+                            && form.get('passwords')?.get('password')?.errors!['minlength']">
+                            Password length at least {{form.get('passwords')?.get('password')?.errors!['minlength'].requiredLength}} characters</small>
+                        <label class="col-12" for="confirm-password">Confirm Password</label>
+                        <input class="col-12" pInputText id="confirm-password" type="password"
+                            [ngClass]="{
+                                'ng-invalid': form.get('passwords')?.errors,
+                                'ng-dirty': form.get('passwords')?.errors
+                            }"
+                            formControlName="confirmPassword"/>
+                        <small class="p-error col-12" *ngIf="form.get('passwords')?.get('confirmPassword')?.touched 
+                            && form.get('passwords')?.errors
+                            && form.get('passwords')?.errors!['passwordMismatch']">
+                            Passwords mismatch
+                        </small>
+                        
+                    </div>
+                    <div >
+                        <label class="col-12" for="first-name">First Name</label>
+                        <input class="col-12" pInputText id="first-name" 
+                            [ngClass]="{
+                                'ng-invalid': form.controls['firstName'].errors,
+                                'ng-dirty': form.controls['firstName'].dirty
+                            }"
+                            formControlName="firstName"/>
+                        <small class="p-error col-12" *ngIf="form.controls['firstName'].touched 
+                            && form.controls['firstName'].errors
+                            && form.controls['firstName'].errors['required']">First Name is required</small>
+                    </div>
+                    <div >
+                        <label class="col-12" for="last-name">Last Name</label>
+                        <input class="col-12" pInputText id="last-name" 
+                            [ngClass]="{
+                                'ng-invalid': form.controls['lastName'].errors,
+                                'ng-dirty': form.controls['lastName'].dirty
+                            }"
+                            formControlName="lastName"/>
+                        <small class="p-error col-12" *ngIf="form.controls['lastName'].touched 
+                            && form.controls['lastName'].errors
+                            && form.controls['lastName'].errors['required']">Last name is required</small>
+                    </div>
+                    <div *ngIf="error">
+                        <small class="p-error col-12">{{error}}</small>
+                    </div>
+                    <div style="margin-top: 10px;" class="row d-flex justify-content-center">
+                        <button pButton class="col-4">Register</button>
+                        <div style="margin-top: 10px; margin-bottom: -10px;">
+                            <button pButton class="p-button-text p-button-sm" (click)="navigateToLogin()">Or login</button>
+                        </div>
+                    </div>
+                </form>
+            </p-panel>
+        </div>
+    </div>
+</div>

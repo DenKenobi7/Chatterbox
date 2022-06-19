@@ -34,8 +34,8 @@
                         <button pButton class="col-4">Login</button>
                     </div>
                 </form>
-                <div *ngIf="errors">
-                    <small class="p-error col-12" *ngFor="let error of errors">{{error}}</small>
+                <div *ngIf="error">
+                    <small class="p-error col-12">{{error}}</small>
                 </div>
                 <div style="margin-top: 10px;" class="row d-flex justify-content-center">
                     <div style="margin-top: 10px; margin-bottom: -10px;">

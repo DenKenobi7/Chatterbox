@@ -1,4 +1,4 @@
-﻿namespace Chatterbox.Core.Wrappers
+﻿namespace Chatterbox.WebAPI.Wrappers
 {
     public class Result<T>
     {

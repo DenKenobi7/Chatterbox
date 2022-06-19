@@ -1,6 +1,8 @@
-﻿using Chatterbox.Infrastructure.Models.Identity;
+﻿using Chatterbox.Infrastructure.Dtos;
+using Chatterbox.Infrastructure.Models.Identity;
 using Chatterbox.Infrastructure.Shared;
 using Chatterbox.WebAPI.Models;
+using Chatterbox.WebAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,16 +14,18 @@ using System.Text;
 namespace Chatterbox.WebAPI.Controllers
 {
     [ApiController]
-    [Route("auth")]
+    [Route("user")]
     [Authorize]
     public class UserController : ControllerBase
     {
         private UserManager<ApplicationUser> _userManager;
-        private SignInManager<ApplicationUser> _signInManager;
-        public UserController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        private RoleManager<ApplicationRole> _roleManager;
+        private readonly CurrentUserService _currentUserService;
+        public UserController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, CurrentUserService currentUserService)
         {
             _userManager = userManager;
-            _signInManager = signInManager;
+            _currentUserService = currentUserService;
+            _roleManager = roleManager;
         }
         [AllowAnonymous]
         [HttpPost("login")]
@@ -55,8 +59,9 @@ namespace Chatterbox.WebAPI.Controllers
                     });
                 return Ok(new
                 {
+                    id = user.Id.ToString(),
                     expiration = token.ValidTo,
-                    username = user.UserName
+                    userName = user.UserName
                 });
             }
             return Unauthorized(new { ErrorMessage = "Email or Password is invalid"});
@@ -81,8 +86,30 @@ namespace Chatterbox.WebAPI.Controllers
                 return Unauthorized(new { ErrorMessage = "Something went wrong while registering" });
             }
 
-            await _userManager.AddToRoleAsync(appUser, Enums.Roles.User.ToString());
+            var resultRole = await _userManager.AddToRoleAsync(appUser, Enums.Roles.User.ToString());
+            if (!resultRole.Succeeded)
+            {
+                var illbehere = "";
+            }
             return Ok();
+        }
+
+        [HttpGet("getAvailableUsers")]
+        public ActionResult<IList<UserGetDto>> GetAvailableUsers()
+        {
+            var userRole = _roleManager.Roles.Where(r => r.Name == "User").Select(r => r.Id).First();
+            var t = _userManager.Users.ToList();
+            var ertert= t.First().Id.ToString(); 
+            var r = t.Where(u => u.Roles.Contains(userRole) &&
+                                           u.Id.ToString() != _currentUserService.UserId).ToList();
+            return r.Select(u => new UserGetDto 
+                               { 
+                                   Id = u.Id.ToString(), 
+                                   UserName = u.UserName,
+                                   FirstName = u.FirstName,
+                                   LastName = u.LastName
+                               })
+                               .ToList();
         }
     }
 }

@@ -7,17 +7,26 @@ import { RegisterModel } from "../../auth/models/RegisterModel";
 import { LoginModel } from "../../auth/models/LoginModel";
 import { Router } from "@angular/router";
 import { ErrorResult } from "../wrappers/ErrorResult";
+import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
+import { environment } from "src/environments/environment";
 
 @Injectable({
     providedIn:'root'
 })
 export class AuthService{
+    httpOptions = {
+        headers: new HttpHeaders({'Content-Type': 'application/json'}),
+        observe: 'response' as 'body',
+        params: new HttpParams(),
+        withCredentials:true
+      }
     constructor(private apiService:ApiService,
+        private httpService:HttpClient,
         private router:Router){
         this.currentUser=null
         this.currentUserSubject = new BehaviorSubject<JWTinfo|null>(localStorage.getItem('user')==null ? localStorage.getItem('user') : 
                                                                                                          JSON.parse(localStorage.getItem('user') ?? "{}"));
-        if(this.currentUserSubject.value!=null && new Date(this.currentUserSubject.value.ValidTo)<new Date()){
+        if(this.currentUserSubject.value!=null && new Date(this.currentUserSubject.value.expiration)<new Date()){
             this.currentUserSubject.next(null)
         }                                                                                                 
         this.currentUserSubject.subscribe(x=>this.currentUser=x)
@@ -30,29 +39,39 @@ export class AuthService{
         return this.currentUserSubject.value;
     }
 
+    getCurrentUser():JWTinfo|null{
+        if (this.currentUser) return this.currentUser;
+        else return localStorage.getItem('user')==null ? localStorage.getItem('user') : 
+        JSON.parse(localStorage.getItem('user') ?? "{}")
+    }
+
     
 
     logout():void {
         // remove user from local storage to log user out
         localStorage.removeItem('user');
         this.currentUserSubject.next(null);
+        this.router.navigateByUrl('/user/login');
     }
     login(loginModel:LoginModel):Observable<JWTinfo | ErrorResult>{
-        return this.apiService.post<any>("auth/login",loginModel)
+        return this.httpService.post<any>(`${environment.apiUrl}user/login`,
+        JSON.stringify(loginModel),this.httpOptions)
             .pipe(map((res:Response) => {
                 // store user details and jwt token in local storage to keep user logged in between page refreshes
-                localStorage.setItem('user', JSON.stringify(res.body));
                 if(res.ok){
-                    this.currentUserSubject.next(res.body as unknown as JWTinfo);
-                
-                    return (res.body as unknown as JWTinfo);
+                    localStorage.setItem('user', JSON.stringify(res.body));
+                    let jwt:JWTinfo = res.body as unknown as JWTinfo;
+                    this.currentUserSubject.next(jwt);
+                    this.router.navigate(["/chat"]);
+                    return jwt;
                 }
                 return res.body as unknown as ErrorResult;
                 
             }));
     }
     register(registerModel:RegisterModel):Observable<any>{
-        return this.apiService.post<any>("auth/register",registerModel).pipe(map((res:Response)=>{
+        return this.httpService.post<any>(`${environment.apiUrl}user/register`,
+        JSON.stringify(registerModel),this.httpOptions).pipe(map((res:Response)=>{
             if(res.ok ){
                 this.router.navigateByUrl("/auth/login");
             }

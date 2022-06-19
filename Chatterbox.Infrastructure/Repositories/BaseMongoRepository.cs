@@ -16,11 +16,12 @@ namespace Chatterbox.Infrastructure.Repositories
         where TEntity : BaseEntity
     {
         protected readonly IMongoCollection<TEntity> _collection;
+        protected readonly IMongoDatabase _db;
         protected readonly IDateTimeProvider _dateTimeProvider;
         public BaseMongoRepository(IMongoDBSettings settings, IDateTimeProvider dateTimeProvider)
         {
-            var database = new MongoClient(settings.ConnectionString).GetDatabase(settings.DatabaseName);
-            _collection = database.GetCollection<TEntity>(GetCollectionName(typeof(TEntity)));
+            _db = new MongoClient(settings.ConnectionString).GetDatabase(settings.DatabaseName);
+            _collection = _db.GetCollection<TEntity>(GetCollectionName(typeof(TEntity)));
             _dateTimeProvider = dateTimeProvider;
         }
         private protected string GetCollectionName(Type documentType)

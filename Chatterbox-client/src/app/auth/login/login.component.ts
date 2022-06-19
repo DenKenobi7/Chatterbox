@@ -12,9 +12,9 @@ import { LoginModel } from "../models/LoginModel";
 })
 export class LoginComponent implements OnInit {
     email: string | null
-    password?: string | null | undefined
-    errors?: string[] | undefined
-    form: FormGroup | undefined
+    password: string | null 
+    error: string 
+    form: FormGroup 
     
     constructor(private router: Router, 
       private formBuilder: FormBuilder, 
@@ -41,7 +41,7 @@ export class LoginComponent implements OnInit {
         this.form.markAsTouched();
         return;
       }
-      this.errors = [];
+      this.error='';
       const loginRequest: LoginModel = this.form.value;
       this.auth.login(loginRequest)
       .subscribe({next:() => {
@@ -51,12 +51,12 @@ export class LoginComponent implements OnInit {
           queryParamsHandling: 'merge'
         });
       }, error: (resp: ErrorResult) => {
-        this.errors = resp.ErrorMessage
+        this.error = resp.ErrorMessage
       }})
     }
   
     navigateToRegister() {
-      this.router.navigate(['/identity/register'], {
+      this.router.navigate(['/auth/register'], {
         queryParamsHandling: 'merge'
       })
     }

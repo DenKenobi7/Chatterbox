@@ -1,6 +1,7 @@
 using Chatterbox.Infrastructure.DBConnection;
 using Chatterbox.Infrastructure.Helpers;
 using Chatterbox.Infrastructure.Models.Identity;
+using Chatterbox.WebAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Identity;
@@ -16,6 +17,7 @@ builder.Services.RegisterMongoDBInfrastructure(builder.Configuration);
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .RegisterIdentityMongoStorage(builder.Configuration);
 builder.Services.AddScoped<UserManager<ApplicationUser>, UserManager<ApplicationUser>>();
+
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.Password.RequireDigit = false;
@@ -42,8 +44,13 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<CurrentUserService>();
+
 builder.Services.AddControllers();
 builder.Services.AddSignalR();
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -83,19 +90,22 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors(x => x.AllowAnyOrigin()
-                  .AllowAnyMethod()
-                  .AllowAnyHeader());
+app.UseCors(cfg =>
+{
+    cfg.AllowAnyHeader()
+    .AllowAnyMethod()
+    .WithOrigins("http://localhost:4200")
+    .AllowCredentials();
+});
 
+app.UseHttpsRedirection();
 app.UseCookiePolicy(new CookiePolicyOptions
 {
-    MinimumSameSitePolicy = SameSiteMode.Strict,
+    MinimumSameSitePolicy = SameSiteMode.None,
     HttpOnly = HttpOnlyPolicy.Always,
     Secure = CookieSecurePolicy.Always
 });
 
-
-app.UseHttpsRedirection();
 
 app.Use(async (context, next) =>
 {
@@ -107,7 +117,7 @@ app.Use(async (context, next) =>
     await next();
 });
 
-
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -123,7 +133,7 @@ using (var scope = app.Services.CreateScope())
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
-    endpoints.MapHub<ChatHub>("/chatsocket");
+    //endpoints.MapHub<ChatHub>("/chatsocket");
 });
 
 app.Run();

@@ -1,4 +1,5 @@
 export interface JWTinfo{
-    ValidTo:Date
+    id:string
+    expiration:Date
     UserName:string
 }
