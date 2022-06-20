@@ -4,6 +4,7 @@
 
 export const environment = {
   apiUrl: 'https://localhost:7007/',
+  apiEncryptionUrl: 'https://localhost:7179/',
   production: false
 };
 
