@@ -1,6 +1,6 @@
 <div *ngIf="chat" style="position:relative; height:50vh; background-color: white;">
-    <div style="height:43vh; overflow-y:scroll;">
-        <div *ngFor="let message of chat.messages">
+    <div style="height:43vh; overflow-y:scroll; position:absolute; top:0; left:0; width:100%;">
+        <div *ngFor="let message of chat.messages" style="position:inherit">
             <div [ngClass]="{
                 'my-message': message.senderId===chat.companionId,
                 'companion-message': message.senderId!==chat.companionId

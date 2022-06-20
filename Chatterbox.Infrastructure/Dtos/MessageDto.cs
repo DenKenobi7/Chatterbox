@@ -1,6 +1,6 @@
 ﻿namespace Chatterbox.Infrastructure.Dtos
 {
-    public class MessageGetDto
+    public class MessageDto
     {
         public string Id { get; set; }
         public string SenderId { get; set; }

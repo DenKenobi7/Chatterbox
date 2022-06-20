@@ -31,8 +31,4 @@ export class ChatService{
         return this.apiService.get<Chat>(`chat?userId=${userId}&chatId=${chatId}`);
     }
 
-    sendMessage(){
-
-    }
-
 }

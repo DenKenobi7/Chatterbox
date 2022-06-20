@@ -10,6 +10,6 @@ namespace Chatterbox.Infrastructure.Interfaces.Interfaces
         Task<ChatDetailsDto> GetChatWithMessagesAsync(string userId, string chatId);
         Task<Message> WriteMessageAsync(Message selfEncrypted, Message conpanionEncrypted, string chatId);
         Task<IList<ChatGetDto>> GetChatsAsync(string userId);
-        Task<ChatGetDto> CreateChatAsync(ApplicationUser user1, ApplicationUser user2);
+        Task<ChatGetDto> CreateChatAsync(ApplicationUser user1, ApplicationUser user2, string chatId);
     }
 }

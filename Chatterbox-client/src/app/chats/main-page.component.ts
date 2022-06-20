@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Subscription } from "rxjs";
 import { ChatGetDto } from "src/app/core/models/ChatGetDto";
 import { Chat } from "../core/models/Chat";
 import { ChatCreateDto } from "../core/models/ChatCreateDto";
@@ -7,6 +8,7 @@ import { AuthService } from "../core/services/auth.service";
 import { ApiService } from "../core/services/http-api.service";
 import { Result } from "../core/wrappers/Result";
 import { ChatService } from "./services/chats.service";
+import { HubService } from "./services/hub.service";
 import { UserService } from "./services/users.service";
 
 @Component({
@@ -20,6 +22,7 @@ export class MainPageComponent implements OnInit{
     selectedChat:ChatGetDto|null = null
     constructor(private authService:AuthService,
                 private apiService:ApiService,
+                private hubService:HubService,
                 private userService:UserService,
                 private chatService:ChatService){      
         this.chats = new Array<ChatGetDto>()  
@@ -31,6 +34,8 @@ export class MainPageComponent implements OnInit{
         this.chatService.getUserChats().subscribe((receivedChats:ChatGetDto[]) => {
             this.chats=receivedChats
         })
+        this.hubService.establishConnection();
+        this.hubService.initReceivingChatsSubscription().subscribe(((chatDto:ChatGetDto) => this.chats.unshift(chatDto)));
     }
     
     onSelectedChat(chat: ChatGetDto) {
@@ -47,12 +52,7 @@ export class MainPageComponent implements OnInit{
             this.selectedChat=existingChat;
         }
         else {
-            let currUser = this.authService.getCurrentUser()
-            let chatCreateDto = new ChatCreateDto(currUser?.id!,user.id); 
-            this.chatService.createChat(chatCreateDto).subscribe((chat:ChatGetDto) => {
-                debugger;
-                this.chats.unshift(chat)
-            });
+            this.hubService.initiateChat(user);
         }
     }
 }

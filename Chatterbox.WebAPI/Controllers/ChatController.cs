@@ -40,13 +40,7 @@ namespace Chatterbox.WebAPI.Controllers
             var userId = _currentUserService.UserId;
             return await _repository.GetChatsAsync(userId);
         }
-
-        [HttpPost("send")]
-        public async Task<IActionResult> SendMessage([FromBody] PairedMessagesDto messages)
-        {
-            await _repository.WriteMessageAsync(messages.MessageSelfEncr, messages.MessageCompEncr, messages.ChatId);
-            return StatusCode(200);
-        }
+                
 
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteChat([FromRoute] string id)
@@ -56,12 +50,12 @@ namespace Chatterbox.WebAPI.Controllers
             return StatusCode(200);
         }
 
-        [HttpPost("create")]
-        public async Task<ActionResult<ChatGetDto>> Create([FromBody] ChatCreateDto chatDto)
-        {
-            var creator = await _userManager.FindByIdAsync(chatDto.UserId);
-            var companion = await _userManager.FindByIdAsync(chatDto.CompanionId);
-            return await _repository.CreateChatAsync(creator, companion);
-        }
+        //[HttpPost("create")]
+        //public async Task<ActionResult<ChatGetDto>> Create([FromBody] ChatCreateDto chatDto)
+        //{
+        //    var creator = await _userManager.FindByIdAsync(chatDto.UserId);
+        //    var companion = await _userManager.FindByIdAsync(chatDto.CompanionId);
+        //    return await _repository.CreateChatAsync(creator, companion);
+        //}
     }
 }

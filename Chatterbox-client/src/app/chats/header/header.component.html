@@ -8,7 +8,7 @@
             <i class="pi pi-search search-ic"></i>
             <input class="height-parent search-text" type="text" pInputText placeholder="Search">         
         </div>
-        <a *ngIf="currentUser" class="p-2 col-md-2 full-height aaa" >Bienvenido, {{currentUser?.UserName}}</a>
+        <a *ngIf="currentUser" class="p-2 col-md-2 full-height aaa" >Bienvenido, {{currentUser?.userName}}</a>
         <a *ngIf="currentUser" class="p-2 col-md-2 full-height aaa" (click)="logout()">Logout</a>
         <a *ngIf="currentUser==null" class="p-2 col-md-2 full-height aaa" href="/auth/login">Login</a>
         

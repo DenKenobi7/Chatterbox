@@ -11,18 +11,22 @@ export class HeaderComponent {
   currentUser?:JWTinfo|null
   constructor(private authService:AuthService,
     private router:Router){
-    this.currentUser= authService.currentUser;
+    this.currentUser= authService.getCurrentUser();
     this.authService.currentUserSubject.subscribe(x=>this.currentUser=x);
   }
   errorClick():void{
+      debugger;
     throw {message:"Error message from denis"}
   }
   logout():void{
       this.authService.logout();
 
   }
+  ngOnInit(){
+    this.currentUser= this.authService.getCurrentUser();
+  }
   get f():string{
-    return this.authService.getCurrentUser() ? `Bienvenido, ${this.authService.getCurrentUser()?.UserName}` : "Login"
+    return this.authService.getCurrentUser() ? `Bienvenido, ${this.authService.getCurrentUser()?.userName}` : "Login"
   }
   
 }

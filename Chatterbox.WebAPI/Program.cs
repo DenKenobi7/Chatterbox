@@ -1,9 +1,11 @@
 using Chatterbox.Infrastructure.DBConnection;
 using Chatterbox.Infrastructure.Helpers;
 using Chatterbox.Infrastructure.Models.Identity;
+using Chatterbox.WebAPI.Hubs;
 using Chatterbox.WebAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -133,7 +135,12 @@ using (var scope = app.Services.CreateScope())
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
-    //endpoints.MapHub<ChatHub>("/chatsocket");
+    endpoints.MapHub<ChatHub>("/hubSocket", options =>
+    {
+        options.Transports =
+                HttpTransportType.WebSockets |
+                HttpTransportType.LongPolling;
+    });
 });
 
 app.Run();

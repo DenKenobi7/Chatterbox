@@ -11,6 +11,6 @@ namespace Chatterbox.Infrastructure.Dtos
         public string Id { get; set; }
         public string UserId { get; set; }
         public string CompanionId { get; set; }
-        public IEnumerable<MessageGetDto> Messages { get; set; }
+        public IEnumerable<MessageDto> Messages { get; set; }
     }
 }

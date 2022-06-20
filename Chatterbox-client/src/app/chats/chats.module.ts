@@ -17,6 +17,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faMessage, fas, faUser, faUserAstronaut } from '@fortawesome/free-solid-svg-icons';
 import { ButtonModule } from 'primeng/button';
 import { InputTextareaModule } from 'primeng/inputtextarea';
+import { HubService } from './services/hub.service';
 
 @NgModule({
     declarations:[
@@ -39,7 +40,8 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
     ],
     providers: [     
         ChatService,
-        UserService
+        UserService,
+        HubService
     ],    
   })  
 export class ChatsModule {  

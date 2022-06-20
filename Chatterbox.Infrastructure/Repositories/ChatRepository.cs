@@ -34,14 +34,14 @@ namespace Chatterbox.Infrastructure.Repositories
                 Id = chatId,
                 UserId = userId,
                 CompanionId = messages.CompanionId,
-                Messages = messages.Messages.Select(m => new MessageGetDto
+                Messages = messages.Messages.Select(m => new MessageDto
                 {
                     Id = m.Id,
                     Text = m.Text,
                     Status = m.Status.ToString(),
                     DateCreated = m.DateCreated,
                     SenderId = m.SenderId
-                }),
+                }).OrderBy(m => m.DateCreated),
             };
             //var messageFilter1 = Builders<Message>.Filter.Where(m => m.IsSelfEncrypted && m.SenderId == userId);
             //var messageFilter2 = Builders<Message>.Filter.Where(m => !m.IsSelfEncrypted && m.SenderId != userId);
@@ -76,11 +76,11 @@ namespace Chatterbox.Infrastructure.Repositories
             return result;
         }
 
-        public async Task<ChatGetDto> CreateChatAsync(ApplicationUser user1, ApplicationUser user2)
+        public async Task<ChatGetDto> CreateChatAsync(ApplicationUser user1, ApplicationUser user2, string chatId)
         {
             var chat = new Chat
             {
-                Id = ObjectId.GenerateNewId().ToString(),
+                Id = chatId,
                 Members = new List<ApplicationUser> { user1, user2 },
                 DateCreated = _dateTimeProvider.GetCurrentDateTime()
             };

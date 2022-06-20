@@ -3,7 +3,7 @@
     <p-listbox [options]="chats" [(ngModel)]="selectedChat" (ngModelChange)="onSelectionChanged()" [multiple]="false" optionLabel="name" [listStyle]="{'max-height':'250px'}">
         <ng-template let-chat pTemplate="item">
             <div class="d-flex" class="chat-item" [ngClass]="{'selected':chat.id===selectedChat?.id}" style="height: 7em; width:100%">
-                <fa-icon [icon]="['fas', 'user']"></fa-icon>
+                <fa-icon [icon]="['fas', 'message']"></fa-icon>
                 <span>{{chat.userName}}</span>
             </div>
         </ng-template>
