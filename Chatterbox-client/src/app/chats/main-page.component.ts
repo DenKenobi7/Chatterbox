@@ -20,6 +20,7 @@ export class MainPageComponent implements OnInit{
     users:UserDto[] = []
     detailedChat:Chat|null = null
     selectedChat:ChatGetDto|null = null
+    subscriptionForUpdates: Subscription
     constructor(private authService:AuthService,
                 private apiService:ApiService,
                 private hubService:HubService,
@@ -35,15 +36,28 @@ export class MainPageComponent implements OnInit{
             this.chats=receivedChats
         })
         this.hubService.establishConnection();
-        this.hubService.initReceivingChatsSubscription().subscribe(((chatDto:ChatGetDto) => this.chats.unshift(chatDto)));
+        this.subscribeOnNewChats();
+    }
+
+    private subscribeOnNewChats = () => {
+        if (this.subscriptionForUpdates) {
+            this.subscriptionForUpdates.unsubscribe();
+        }
+        this.subscriptionForUpdates = this.hubService.initReceivingChatsSubscription().subscribe((chatDto:ChatGetDto) => {
+            
+            this.chats = [chatDto, ...this.chats];
+            //this.scroller.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
+        })
     }
     
     onSelectedChat(chat: ChatGetDto) {
+        debugger;
         this.selectedChat = chat;
         this.chatService.getChat(this.authService.currentUser!.id,chat.id).subscribe((received:Chat) => this.detailedChat = received);
     }
 
     onSelectedUser(user: UserDto){
+        debugger;
         let existingChat: ChatGetDto|undefined = this.chats.find(e => {
             if(e.companionId === user.id) return true;
             return false;

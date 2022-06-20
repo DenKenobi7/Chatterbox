@@ -64,13 +64,14 @@ namespace Chatterbox.WebAPI.Hubs
             var creator = await _userManager.FindByIdAsync(chatDto.UserId);
             var companion = await _userManager.FindByIdAsync(chatDto.CompanionId);
             var chat = await _repository.CreateChatAsync(creator, companion, chatDto.Id);
-            await Clients.User(_currentUserService.UserHubIdentifier)
+            await Clients.Group(companion.UserName)
                 .SendAsync("ReceiveChatInvitation", chat);
         }
 
         public async Task SendMessage(PairedMessagesDto messages)
         {
             _currentUserService.User = Context.User;
+            var userId = _currentUserService.User.FindFirstValue("usId");
             var selfEncrMes = new Message 
             {
                 Id = messages.MessageSelfEncr.Id,
@@ -79,7 +80,7 @@ namespace Chatterbox.WebAPI.Hubs
                 DelieveredAt = _dateTimeProvider.GetCurrentDateTime(),
                 Status = Message.MessageStatus.Sent,
                 IsSelfEncrypted = true,
-                SenderId = _currentUserService.UserId 
+                SenderId = userId
             };
             var compEncrMes = new Message
             {
@@ -89,7 +90,7 @@ namespace Chatterbox.WebAPI.Hubs
                 DelieveredAt = _dateTimeProvider.GetCurrentDateTime(),
                 Status = Message.MessageStatus.Sent,
                 IsSelfEncrypted = false,
-                SenderId = _currentUserService.UserId
+                SenderId = userId
             };
 
             messages.MessageCompEncr.Id = compEncrMes.Id;

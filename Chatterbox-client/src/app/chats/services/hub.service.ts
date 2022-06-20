@@ -22,6 +22,7 @@ export class HubService{
     private connection: HubConnection | null;
     private chatId: string | null;
     private chatSubject: Subject<ChatGetDto> = new Subject<ChatGetDto>()
+    private messageSubject: Subject<MessageGetDto> = new Subject<MessageGetDto>()
     private chats: ChatGetDto[]
     constructor(
         private router:Router,
@@ -34,7 +35,7 @@ export class HubService{
         if(this.connection && this.chatId){
             this.disconectChat(this.chatId)
         }
-        else this.activateChat(chId);
+        this.activateChat(chId);
     }
 
     establishConnection() {
@@ -53,6 +54,7 @@ export class HubService{
               console.log('hub connected')              
             })
             .catch(err => {
+              console.log('hub error')
               console.error(err.toString())
             })
         } 
@@ -73,8 +75,9 @@ export class HubService{
     }
 
     initiateChat(user:UserDto){
+      debugger;
         var ObjectID = require("bson-objectid");
-        let newChatId = ObjectID().toString()
+        let newChatId = ObjectID().toString();
         debugger;
         let model = new ChatCreateDto(this.authService.getCurrentUser()!.id, user.id,newChatId);
         let chatDto:ChatGetDto = {
@@ -83,11 +86,13 @@ export class HubService{
             userName:user.userName,
             companionId:user.id
         }
+        this.chatSubject.next(chatDto)
+        console.log('chat initiated')
         this.connection?.invoke("InitiateChat", model)
-        .then(() => {//ToDo: create encrypting
-        })
-        .then(() =>{this.chatSubject.next(chatDto)});
-        console.log('chat initiated') 
+        .then(() =>{
+          console.log('chat initiated')
+        });
+         
     }
 
     activateChat(chatId:string){
@@ -97,19 +102,19 @@ export class HubService{
     }
     
     initReceivingMessagesSubscription(): Observable<MessageGetDto> {
-        const subject = new Subject<MessageGetDto>();
         this.connection?.on("ReceiveMessage", args => {
           const message: MessageGetDto = {...args};
           //const text = this.chatKeyHelper.decrypt(message.text);
           //message.text = text;
-          subject.next(message);
+          this.messageSubject.next(message);
         });
         
-        return subject;
+        return this.messageSubject;
     }
 
     initReceivingChatsSubscription(): Observable<ChatGetDto> {
         this.connection?.on("ReceiveChatInvitation", args => {
+          debugger;
           const chat: ChatGetDto = {...args};
           //const text = this.chatKeyHelper.decrypt(message.text);
           //message.text = text;
@@ -119,7 +124,7 @@ export class HubService{
         return this.chatSubject;
     }
     
-    async sendMessage(textMes: string) : Promise<MessageGetDto>{
+    async sendMessage(textMes: string){
         //const encryptedText = this.chatKeyHelper.encrypt(text);
         
         var ObjectID = require("bson-objectid");
@@ -146,8 +151,8 @@ export class HubService{
           messageSelfEncr: messageSelf,
           messageCompEncr: messageComp
         };
-        await this.connection?.invoke("SendMessage", messages);
-        return messageSelf
+        this.messageSubject.next(messageSelf)
+        this.connection?.invoke("SendMessage", messages);
     }
 
 

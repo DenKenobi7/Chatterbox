@@ -45,11 +45,8 @@ export class LoginComponent implements OnInit {
       const loginRequest: LoginModel = this.form.value;
       this.auth.login(loginRequest)
       .subscribe({next:() => {
-        const url = this.activatedRoute.snapshot.queryParams['returnUrl'] || '';
-        this.router.navigate([url], {
-          queryParams: {returnUrl: null},
-          queryParamsHandling: 'merge'
-        });
+              
+        this.router.navigate(["/chat"]);
       }, error: (resp: ErrorResult) => {
         this.error = resp.ErrorMessage
       }})

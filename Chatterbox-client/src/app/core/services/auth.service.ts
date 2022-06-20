@@ -62,7 +62,6 @@ export class AuthService{
                     localStorage.setItem('user', JSON.stringify(res.body));
                     let jwt:JWTinfo = res.body as unknown as JWTinfo;
                     this.currentUserSubject.next(jwt);
-                    this.router.navigate(["/chat"]);
                     return jwt;
                 }
                 return res.body as unknown as ErrorResult;
@@ -72,10 +71,10 @@ export class AuthService{
     register(registerModel:RegisterModel):Observable<any>{
         return this.httpService.post<any>(`${environment.apiUrl}user/register`,
         JSON.stringify(registerModel),this.httpOptions).pipe(map((res:Response)=>{
-            if(res.ok ){
-                this.router.navigateByUrl("/auth/login");
+            if(!res.ok ){
+                return res.body as unknown as ErrorResult;
             }
-            return res.body as unknown as ErrorResult;
+            return res.body
         }))
     }
 }

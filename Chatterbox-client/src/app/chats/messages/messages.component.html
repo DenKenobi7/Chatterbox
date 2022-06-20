@@ -1,39 +1,40 @@
-<div *ngIf="chat" style="position:relative; height:50vh; background-color: white;">
-    <div style="height:43vh; overflow-y:scroll; position:absolute; top:0; left:0; width:100%;">
-        <div *ngFor="let message of chat.messages" style="position:inherit">
-            <div [ngClass]="{
-                'my-message': message.senderId===chat.companionId,
-                'companion-message': message.senderId!==chat.companionId
+<div *ngIf="chat" style="position:relative; height:50vh; background-color: white; margin:0; padding: 0;">
+    <p-virtualScroller [value]="chat.messages" scrollHeight="calc(50vh)"  [itemSize]="70" class="d-flex flex-column">
+        <ng-template pTemplate="item" let-message>
+            <div style="display:flex; width:100%; min-height: 50px; color:black" [ngClass]="{
+                'my-message': message.senderId!==chat.companionId,
+                'companion-message': message.senderId===chat.companionId
             }">
-                <div style="display: inline-block; height:40px; width:40px; margin-right: 30px;" *ngIf="message.senderId===chat.companionId">
+                <div style="display: inline-flex; height:40px; width:40px; font-size:1.7em; margin-right: 10px;" *ngIf="message.senderId===chat.companionId">
                     <fa-icon style="height:100%; width:100%; margin:0 auto;" [icon]="['fas','user-astronaut']"></fa-icon>
                 </div>
-
-                <div class="wrapper-message">
+    
+                <div class="wrapper-message flex-column">
                     <p class="message">{{message.text}}</p>
-                    <p style="display: flex; justify-content: space-between;">
-                        <span>{{message.dateCreated}}</span>
+                    <p style="display: flex; justify-content: space-between;" class="info">
+                        <span>{{formatDate(message.dateCreated)}}</span>
                         <span>{{message.status}}</span>
                     </p>
                     
                 </div>
-
-                <div style="display: inline-block; height:40px; width:40px; margin-left: 30px;" *ngIf="message.senderId!==chat.companionId">
+    
+                <div style="display: inline-flek; height:40px; width:40px; font-size:1.7em; margin-left: 10px;" *ngIf="message.senderId!==chat.companionId">
                     <fa-icon style="height:100%; width:100%; margin:0 auto;" [icon]="['fas','user-astronaut']"></fa-icon>
                 </div>
-
-            </div>
-            
-        </div>
-    </div>
-    !<!--<div style="width:100% !important;" class="r" style="position:absolute; bottom:0%;">-->
-        <textarea style=" position: absolute;bottom: 0; left:0;" [(ngModel)]='message' [rows]="1" [cols]="50" pInputTextarea [autoResize]="true"></textarea>
-        <button pButton type="button" (click)="send()" style="height:50px; width:50px; position: absolute;bottom:0; right: 0;" class="p-button-rounded p-button-outlined">
-            <fa-icon style="margin:0 auto;" [icon]="['fas','paper-plane']"></fa-icon>            
-        </button>
     
-
+            </div>
+        </ng-template>
+        <ng-template pTemplate="footer">
+            <div *ngIf="chat" class="row mt-auto" style="margin:0; width:100%">
+                <textarea [(ngModel)]='message' class="col-10" style="height: 60px;"></textarea>
+                <button pButton type="button" (click)="send()" style="height:60px; width:60px;" class="col-2 p-button-rounded p-button-outlined">
+                    <fa-icon style="margin:0 auto;" [icon]="['fas','paper-plane']"></fa-icon>            
+                </button>
+            </div>
+        </ng-template>
+    </p-virtualScroller>
 </div>
+
 <div *ngIf="!chat">
     <h4>Select chat</h4>
 </div>

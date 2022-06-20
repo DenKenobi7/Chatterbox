@@ -16,6 +16,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faMessage, fas, faUser, faUserAstronaut } from '@fortawesome/free-solid-svg-icons';
 import { ButtonModule } from 'primeng/button';
+import {VirtualScrollerModule} from 'primeng/virtualscroller';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { HubService } from './services/hub.service';
 
@@ -31,6 +32,7 @@ import { HubService } from './services/hub.service';
         FontAwesomeModule,                
         InputTextareaModule,
         ReactiveFormsModule,
+        VirtualScrollerModule,   
         FormsModule,
         ListboxModule,
         ButtonModule,

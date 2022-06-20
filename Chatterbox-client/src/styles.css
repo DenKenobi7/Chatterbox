@@ -134,28 +134,40 @@ a,button {
     background-color: #7c96b4;
 }
 .my-message{
-    position: absolute;
-    right: 0%;
     margin-right: 10px;
+    justify-content: flex-end;
 }
     .my-message .message{
         background-color: #5d7086;
     }
 
 .companion-message{
-    position: absolute;
-    right: 100%;
     margin-left: 10px;
+    justify-content: flex-start;
 }
     .companion-message .message{
         background-color: #7c96b4;
     }
 
 .message{
-    display: inline-block;
+    display: flex;
     min-height: 40px;
-    min-width: 20%;
-    max-width: 60%;
     overflow-wrap: break-word;
     padding: 5px; 
+}
+
+.info{
+  font-size: 0.7em;
+}
+p{
+  margin:0;
+}
+
+.wrapper-message{
+  display: inline-flex;
+  max-width: 60%;
+  min-width: 30%;
+}
+.wrapper-message > p{
+  width: 100%;
 }
