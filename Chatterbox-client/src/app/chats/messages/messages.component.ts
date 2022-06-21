@@ -28,18 +28,19 @@ export class MessagesComponent implements OnInit{
                 private apiService:ApiService){        
     }
 
-    send(){
+    async send(){
+        debugger;
         if (this.message){
             let sengingMessage = this.message;
             this.message = '';
-            this.hubService.sendMessage(sengingMessage);
+            await this.hubService.sendMessage(sengingMessage, this.chat!.companionId);
         }       
     }
 
-    ngOnChanges(changes: SimpleChanges): void {
+    async ngOnChanges(changes: SimpleChanges) {
         if (changes['chat'].currentValue) {
             let chat:Chat = changes['chat'].currentValue
-            this.hubService.setNewChat(chat.id)
+            this.hubService.setNewChat(chat.id, chat.companionId)
             this.subscribeForUpdates();
         }
       }

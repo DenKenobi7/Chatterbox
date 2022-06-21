@@ -11,6 +11,7 @@ import { MessageGetDto } from "src/app/core/models/MessageGetDto";
 import { UserDto } from "src/app/core/models/UserDto";
 import { AuthService } from "src/app/core/services/auth.service";
 import { ApiService } from "src/app/core/services/http-api.service";
+import { RSAService } from "src/app/core/services/RSA.service";
 import { Result } from "src/app/core/wrappers/Result";
 import { environment } from "src/environments/environment";
 declare var require: any
@@ -27,15 +28,16 @@ export class HubService{
     constructor(
         private router:Router,
         private apiService:ApiService,
-        private authService:AuthService){
+        private authService:AuthService,
+        private rsaService:RSAService){
                 
     }
 
-    public setNewChat(chId:string){
+    public async setNewChat(chId:string, companionId:string){
         if(this.connection && this.chatId){
             this.disconectChat(this.chatId)
         }
-        this.activateChat(chId);
+        await this.activateChat(chId, companionId);
     }
 
     establishConnection() {
@@ -74,12 +76,12 @@ export class HubService{
         }
     }
 
-    initiateChat(user:UserDto){
-      debugger;
+    async initiateChat(user:UserDto){
         var ObjectID = require("bson-objectid");
         let newChatId = ObjectID().toString();
         debugger;
-        let model = new ChatCreateDto(this.authService.getCurrentUser()!.id, user.id,newChatId);
+        const currentUserId = this.authService.getCurrentUser()!.id;
+        let model = new ChatCreateDto(currentUserId, user.id,newChatId);
         let chatDto:ChatGetDto = {
             id: newChatId,
             lastUsed: new Date(),
@@ -87,25 +89,27 @@ export class HubService{
             companionId:user.id
         }
         this.chatSubject.next(chatDto)
-        console.log('chat initiated')
         this.connection?.invoke("InitiateChat", model)
-        .then(() =>{
+        .then(async () =>{
           console.log('chat initiated')
+          await this.rsaService.initChatKey(currentUserId, user.id, newChatId)
         });
          
     }
 
-    activateChat(chatId:string){
+    async activateChat(chatId:string, companionId:string){
         this.chatId = chatId;
         this.connection?.invoke("ActivateChat", chatId);
+        await this.rsaService.getCompanionKey(this.authService.getCurrentUser()!.id,companionId,chatId)
         console.log('chat connected'+chatId) 
     }
     
     initReceivingMessagesSubscription(): Observable<MessageGetDto> {
+      
         this.connection?.on("ReceiveMessage", args => {
           const message: MessageGetDto = {...args};
-          //const text = this.chatKeyHelper.decrypt(message.text);
-          //message.text = text;
+          const text = this.rsaService.decrypt(message.text, this.authService.getCurrentUser()!.id, this.chatId!);
+          message.text = text;
           this.messageSubject.next(message);
         });
         
@@ -116,34 +120,36 @@ export class HubService{
         this.connection?.on("ReceiveChatInvitation", args => {
           debugger;
           const chat: ChatGetDto = {...args};
-          //const text = this.chatKeyHelper.decrypt(message.text);
-          //message.text = text;
+          this.rsaService.initChatKey(this.authService.getCurrentUser()!.id, chat.companionId, chat.id)
           this.chatSubject.next(chat);
         });
         
         return this.chatSubject;
     }
     
-    async sendMessage(textMes: string){
-        //const encryptedText = this.chatKeyHelper.encrypt(text);
+    async sendMessage(textMes: string, companionId: string){
+      debugger;
+        let userId = this.authService.getCurrentUser()!.id;
         
+        const companionEncryptedText = this.rsaService.encrypt(textMes, companionId, this.chatId!);
+        const selfEncryptedText = this.rsaService.encrypt(textMes, userId, this.chatId!);
         var ObjectID = require("bson-objectid");
         
         let selfMessageId = ObjectID().toString()
         
-        let userId = this.authService.getCurrentUser()!.id;
+        
         let messageSelf:MessageGetDto = {
             id:selfMessageId,
             status:'Sent',
             senderId: userId,
-            text: textMes,
+            text: selfEncryptedText,
             dateCreated: new Date()
         }
         let messageComp:MessageGetDto = {
             id:'',
             status:'Sent',
             senderId: userId,
-            text: textMes,
+            text: companionEncryptedText,
             dateCreated: new Date()
         }
         let messages = {
@@ -151,8 +157,12 @@ export class HubService{
           messageSelfEncr: messageSelf,
           messageCompEncr: messageComp
         };
-        this.messageSubject.next(messageSelf)
-        this.connection?.invoke("SendMessage", messages);
+        
+        
+        this.connection?.invoke("SendMessage", messages).then(() =>{
+          messageSelf.text = textMes;
+          this.messageSubject.next(messageSelf)
+        });
     }
 
 

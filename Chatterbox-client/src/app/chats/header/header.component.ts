@@ -20,6 +20,7 @@ export class HeaderComponent {
   }
   logout():void{
       this.authService.logout();
+      this.router.navigate(['auth/login']);
 
   }
   ngOnInit(){

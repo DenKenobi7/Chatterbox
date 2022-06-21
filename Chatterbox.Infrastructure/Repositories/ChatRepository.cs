@@ -41,7 +41,7 @@ namespace Chatterbox.Infrastructure.Repositories
                     Status = m.Status.ToString(),
                     DateCreated = m.DateCreated,
                     SenderId = m.SenderId
-                }).OrderBy(m => m.DateCreated),
+                }).OrderBy(m => m.DateCreated).ToList(),
             };
             //var messageFilter1 = Builders<Message>.Filter.Where(m => m.IsSelfEncrypted && m.SenderId == userId);
             //var messageFilter2 = Builders<Message>.Filter.Where(m => !m.IsSelfEncrypted && m.SenderId != userId);
@@ -89,8 +89,8 @@ namespace Chatterbox.Infrastructure.Repositories
             {
                 Id = chat.Id,
                 LastUsed = chat.DateCreated,
-                UserName = user2.UserName,
-                CompanionId = user2.Id.ToString()
+                UserName = user1.UserName,
+                CompanionId = user1.Id.ToString()
             };
         }
     }

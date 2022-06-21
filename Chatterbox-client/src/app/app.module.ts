@@ -11,6 +11,7 @@ import { SharedModule } from './shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AuthInterceptor } from './core/auth-interceptor';
 import { CommonModule } from '@angular/common';
+import { RSAService } from './core/services/RSA.service';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { CommonModule } from '@angular/common';
   providers: [    
     ApiService,
     AuthService,
+    RSAService,
     {provide: HTTP_INTERCEPTORS, useClass:AuthInterceptor, multi:true}
   ],
   bootstrap: [AppComponent]

@@ -6,6 +6,7 @@ import { ChatCreateDto } from "../core/models/ChatCreateDto";
 import { UserDto } from "../core/models/UserDto";
 import { AuthService } from "../core/services/auth.service";
 import { ApiService } from "../core/services/http-api.service";
+import { RSAService } from "../core/services/RSA.service";
 import { Result } from "../core/wrappers/Result";
 import { ChatService } from "./services/chats.service";
 import { HubService } from "./services/hub.service";
@@ -24,6 +25,7 @@ export class MainPageComponent implements OnInit{
     constructor(private authService:AuthService,
                 private apiService:ApiService,
                 private hubService:HubService,
+                private rsaService:RSAService,
                 private userService:UserService,
                 private chatService:ChatService){      
         this.chats = new Array<ChatGetDto>()  
@@ -53,10 +55,19 @@ export class MainPageComponent implements OnInit{
     onSelectedChat(chat: ChatGetDto) {
         debugger;
         this.selectedChat = chat;
-        this.chatService.getChat(this.authService.currentUser!.id,chat.id).subscribe((received:Chat) => this.detailedChat = received);
+        this.chatService.getChat(this.authService.currentUser!.id,chat.id).subscribe(async (received:Chat) => {
+            debugger;
+            const userId = this.authService.getCurrentUser()!.id;
+            for (let message of received.messages){
+                this.rsaService.decrypt(message.text, userId, chat.id);
+                message.text
+            }
+            await this.rsaService.getCompanionKey(userId, this.selectedChat!.companionId, this.selectedChat!.id)
+            this.detailedChat = received
+        });
     }
 
-    onSelectedUser(user: UserDto){
+    async onSelectedUser(user: UserDto){
         debugger;
         let existingChat: ChatGetDto|undefined = this.chats.find(e => {
             if(e.companionId === user.id) return true;
@@ -66,7 +77,7 @@ export class MainPageComponent implements OnInit{
             this.selectedChat=existingChat;
         }
         else {
-            this.hubService.initiateChat(user);
+            await this.hubService.initiateChat(user);
         }
     }
 }
