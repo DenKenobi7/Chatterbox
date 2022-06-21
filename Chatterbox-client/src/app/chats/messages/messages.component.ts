@@ -1,14 +1,12 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild } from "@angular/core";
 import { AuthService } from "../../core/services/auth.service";
 import { JWTinfo } from "../../auth/models/JWTInfo";
-import { ChatGetDto } from "src/app/core/models/ChatGetDto";
 import { ChatService } from "../services/chats.service";
 import { UserDto } from "src/app/core/models/UserDto";
 import { Chat } from "src/app/core/models/Chat";
 import { ApiService } from "src/app/core/services/http-api.service";
 import { Subscription } from "rxjs";
 import { HubService } from "../services/hub.service";
-import { MessageGetDto } from "src/app/core/models/MessageGetDto";
 
 @Component({
     selector: 'messages',
@@ -29,7 +27,6 @@ export class MessagesComponent implements OnInit{
     }
 
     async send(){
-        debugger;
         if (this.message){
             let sengingMessage = this.message;
             this.message = '';
@@ -50,7 +47,6 @@ export class MessagesComponent implements OnInit{
           this.subscriptionForUpdates.unsubscribe();
         }
         this.subscriptionForUpdates = this.hubService.initReceivingMessagesSubscription().subscribe(message => {
-            
             this.chat!.messages = [...this.chat!.messages, message];
             //this.scroller.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
         })
@@ -68,7 +64,6 @@ export class MessagesComponent implements OnInit{
             day = '' + d.getDate(),
             hour = '' + d.getHours(),
             minute = '' + d.getMinutes();
-
     
         if (month.length < 2) 
             month = '0' + month;
@@ -76,7 +71,5 @@ export class MessagesComponent implements OnInit{
             day = '0' + day;
     
         return [month, day].join('/')+ ' ' + [hour, minute].join(':');
-    }
-    
-  
+    }  
 }

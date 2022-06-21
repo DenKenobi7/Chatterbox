@@ -2,12 +2,9 @@ import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { Subscription } from "rxjs";
 import { ChatGetDto } from "src/app/core/models/ChatGetDto";
 import { Chat } from "../core/models/Chat";
-import { ChatCreateDto } from "../core/models/ChatCreateDto";
 import { UserDto } from "../core/models/UserDto";
 import { AuthService } from "../core/services/auth.service";
-import { ApiService } from "../core/services/http-api.service";
 import { RSAService } from "../core/services/RSA.service";
-import { Result } from "../core/wrappers/Result";
 import { ChatService } from "./services/chats.service";
 import { HubService } from "./services/hub.service";
 import { UserService } from "./services/users.service";
@@ -23,7 +20,6 @@ export class MainPageComponent implements OnInit{
     selectedChat:ChatGetDto|null = null
     subscriptionForUpdates: Subscription
     constructor(private authService:AuthService,
-                private apiService:ApiService,
                 private hubService:HubService,
                 private rsaService:RSAService,
                 private userService:UserService,
@@ -46,14 +42,12 @@ export class MainPageComponent implements OnInit{
             this.subscriptionForUpdates.unsubscribe();
         }
         this.subscriptionForUpdates = this.hubService.initReceivingChatsSubscription().subscribe((chatDto:ChatGetDto) => {
-            
             this.chats = [chatDto, ...this.chats];
             //this.scroller.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
         })
     }
     
     onSelectedChat(chat: ChatGetDto) {
-        debugger;
         this.selectedChat = chat;
         this.chatService.getChat(this.authService.currentUser!.id,chat.id).subscribe(async (received:Chat) => {
             debugger;
@@ -68,7 +62,6 @@ export class MainPageComponent implements OnInit{
     }
 
     async onSelectedUser(user: UserDto){
-        debugger;
         let existingChat: ChatGetDto|undefined = this.chats.find(e => {
             if(e.companionId === user.id) return true;
             return false;

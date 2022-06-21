@@ -1,18 +1,12 @@
 import { Injectable } from "@angular/core";
-import { Router } from "@angular/router";
 import { HttpTransportType, HubConnection, HubConnectionBuilder, JsonHubProtocol, LogLevel } from "@microsoft/signalr";
-
 import { Observable, Subject } from "rxjs";
-import { JWTinfo } from "src/app/auth/models/JWTInfo";
-import { Chat } from "src/app/core/models/Chat";
 import { ChatCreateDto } from "src/app/core/models/ChatCreateDto";
 import { ChatGetDto } from "src/app/core/models/ChatGetDto";
 import { MessageGetDto } from "src/app/core/models/MessageGetDto";
 import { UserDto } from "src/app/core/models/UserDto";
 import { AuthService } from "src/app/core/services/auth.service";
-import { ApiService } from "src/app/core/services/http-api.service";
 import { RSAService } from "src/app/core/services/RSA.service";
-import { Result } from "src/app/core/wrappers/Result";
 import { environment } from "src/environments/environment";
 declare var require: any
 
@@ -24,10 +18,7 @@ export class HubService{
     private chatId: string | null;
     private chatSubject: Subject<ChatGetDto> = new Subject<ChatGetDto>()
     private messageSubject: Subject<MessageGetDto> = new Subject<MessageGetDto>()
-    private chats: ChatGetDto[]
     constructor(
-        private router:Router,
-        private apiService:ApiService,
         private authService:AuthService,
         private rsaService:RSAService){
                 
@@ -79,7 +70,6 @@ export class HubService{
     async initiateChat(user:UserDto){
         var ObjectID = require("bson-objectid");
         let newChatId = ObjectID().toString();
-        debugger;
         const currentUserId = this.authService.getCurrentUser()!.id;
         let model = new ChatCreateDto(currentUserId, user.id,newChatId);
         let chatDto:ChatGetDto = {
@@ -104,8 +94,7 @@ export class HubService{
         console.log('chat connected'+chatId) 
     }
     
-    initReceivingMessagesSubscription(): Observable<MessageGetDto> {
-      
+    initReceivingMessagesSubscription(): Observable<MessageGetDto> {      
         this.connection?.on("ReceiveMessage", args => {
           const message: MessageGetDto = {...args};
           const text = this.rsaService.decrypt(message.text, this.authService.getCurrentUser()!.id, this.chatId!);
@@ -118,25 +107,21 @@ export class HubService{
 
     initReceivingChatsSubscription(): Observable<ChatGetDto> {
         this.connection?.on("ReceiveChatInvitation", args => {
-          debugger;
           const chat: ChatGetDto = {...args};
           this.rsaService.initChatKey(this.authService.getCurrentUser()!.id, chat.companionId, chat.id)
           this.chatSubject.next(chat);
-        });
-        
+        });        
         return this.chatSubject;
     }
     
     async sendMessage(textMes: string, companionId: string){
-      debugger;
         let userId = this.authService.getCurrentUser()!.id;
         
         const companionEncryptedText = this.rsaService.encrypt(textMes, companionId, this.chatId!);
         const selfEncryptedText = this.rsaService.encrypt(textMes, userId, this.chatId!);
         var ObjectID = require("bson-objectid");
         
-        let selfMessageId = ObjectID().toString()
-        
+        let selfMessageId = ObjectID().toString()        
         
         let messageSelf:MessageGetDto = {
             id:selfMessageId,
@@ -156,14 +141,11 @@ export class HubService{
           chatId: this.chatId,
           messageSelfEncr: messageSelf,
           messageCompEncr: messageComp
-        };
-        
+        };        
         
         this.connection?.invoke("SendMessage", messages).then(() =>{
           messageSelf.text = textMes;
           this.messageSubject.next(messageSelf)
         });
     }
-
-
 }

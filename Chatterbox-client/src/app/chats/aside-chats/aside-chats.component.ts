@@ -1,8 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { AuthService } from "../../core/services/auth.service";
-import { JWTinfo } from "../../auth/models/JWTInfo";
 import { ChatGetDto } from "src/app/core/models/ChatGetDto";
-import { ChatService } from "../services/chats.service";
 
 @Component({
     selector: 'aside-chats',
@@ -13,8 +10,7 @@ export class AsideChatsComponent implements OnInit{
     @Input() initialChat:ChatGetDto | null
     @Output() onSelectedChat = new EventEmitter<ChatGetDto>();
     selectedChat:ChatGetDto|null
-    constructor(private authService:AuthService,
-                private chatService:ChatService){        
+    constructor(){        
     }
 
     onSelectionChanged():void{
@@ -28,7 +24,5 @@ export class AsideChatsComponent implements OnInit{
             this.selectedChat=this.initialChat;
             this.onSelectionChanged();
         }
-    }
-    
-  
+    }   
 }

@@ -24,7 +24,6 @@ namespace EncryptionExchanger.Controllers
             var filter2 = Builders<EncryptionModel>.Filter.Eq(m => m.UserTo, userTo);
             var filter3 = Builders<EncryptionModel>.Filter.Eq(m => m.ChatId, chatId);
             var filterAgg = Builders<EncryptionModel>.Filter.And(filter1, filter2, filter3);
-            var fake = await _collection.Find(_ => true).ToListAsync();
             var key = await _collection.Find(filter1 & filter2 & filter3).FirstAsync();
             return key;
         }

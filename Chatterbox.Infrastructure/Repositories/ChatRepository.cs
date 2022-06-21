@@ -4,7 +4,6 @@ using Chatterbox.Infrastructure.Interfaces.Interfaces;
 using Chatterbox.Infrastructure.Models;
 using Chatterbox.Infrastructure.Models.Identity;
 using Chatterbox.Infrastructure.Shared.Providers;
-using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Chatterbox.Infrastructure.Repositories
@@ -16,16 +15,16 @@ namespace Chatterbox.Infrastructure.Repositories
         public async Task<ChatDetailsDto> GetChatWithMessagesAsync(string userId, string chatId)
         {
             var filter1 = Builders<Chat>.Filter.Eq(doc => doc.Id, chatId);
-            
+
             var projection = Builders<Chat>.Projection;
             var messages = await _collection.Find(filter1)
                 .Project(projection.Expression(m => new
                 {
-                    CompanionId = m.Members.Select(u=>u.Id.ToString()).First(id => id!=userId),
-               
+                    CompanionId = m.Members.Select(u => u.Id.ToString()).First(id => id != userId),
+
                     Messages = m.Messages.Where(m => m.IsSelfEncrypted && m.SenderId == userId ||
                                                        !m.IsSelfEncrypted && m.SenderId != userId)
-                              .ToList()
+                                         .ToList()
                 }
                 ))
                 .FirstAsync();
@@ -43,8 +42,6 @@ namespace Chatterbox.Infrastructure.Repositories
                     SenderId = m.SenderId
                 }).OrderBy(m => m.DateCreated).ToList(),
             };
-            //var messageFilter1 = Builders<Message>.Filter.Where(m => m.IsSelfEncrypted && m.SenderId == userId);
-            //var messageFilter2 = Builders<Message>.Filter.Where(m => !m.IsSelfEncrypted && m.SenderId != userId);
             return chat;
         }
 
@@ -62,7 +59,7 @@ namespace Chatterbox.Infrastructure.Repositories
             var id = new Guid(userId);
             //var filter1 = Builders<Chat>.Filter.Eq(doc => doc.Id, chatId);
             var filter2 = Builders<Chat>.Filter.ElemMatch(chat => chat.Members, it => it.Id == id);
-            var result =  await _collection
+            var result = await _collection
                                     .Find(filter2)
                                     .Project(Builders<Chat>.Projection
                                         .Expression(ch => new ChatGetDto

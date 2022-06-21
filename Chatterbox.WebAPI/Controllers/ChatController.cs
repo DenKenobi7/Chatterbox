@@ -1,14 +1,10 @@
 using Chatterbox.Infrastructure.Dtos;
 using Chatterbox.Infrastructure.Interfaces.Interfaces;
-using Chatterbox.Infrastructure.Models;
 using Chatterbox.Infrastructure.Models.Identity;
-using Chatterbox.WebAPI.Models;
 using Chatterbox.WebAPI.Services;
-using Chatterbox.WebAPI.Wrappers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Web.Resource;
 
 namespace Chatterbox.WebAPI.Controllers
 {
@@ -40,22 +36,14 @@ namespace Chatterbox.WebAPI.Controllers
             var userId = _currentUserService.UserId;
             return await _repository.GetChatsAsync(userId);
         }
-                
+
 
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteChat([FromRoute] string id)
         {
             var result = await _repository.DeleteAsync(id);
-            
+
             return StatusCode(200);
         }
-
-        //[HttpPost("create")]
-        //public async Task<ActionResult<ChatGetDto>> Create([FromBody] ChatCreateDto chatDto)
-        //{
-        //    var creator = await _userManager.FindByIdAsync(chatDto.UserId);
-        //    var companion = await _userManager.FindByIdAsync(chatDto.CompanionId);
-        //    return await _repository.CreateChatAsync(creator, companion);
-        //}
     }
 }

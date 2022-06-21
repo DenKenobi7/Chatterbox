@@ -1,5 +1,4 @@
 import { Injectable } from "@angular/core";
-import { Router } from "@angular/router";
 import { Observable } from "rxjs";
 import { UserDto } from "src/app/core/models/UserDto";
 import { ApiService } from "src/app/core/services/http-api.service";
@@ -9,7 +8,6 @@ import { ApiService } from "src/app/core/services/http-api.service";
 })
 export class UserService{
     constructor(
-        private router:Router,
         private apiService:ApiService){                
     }
 

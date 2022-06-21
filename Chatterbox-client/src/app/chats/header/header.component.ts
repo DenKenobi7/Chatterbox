@@ -26,8 +26,4 @@ export class HeaderComponent {
   ngOnInit(){
     this.currentUser= this.authService.getCurrentUser();
   }
-  get f():string{
-    return this.authService.getCurrentUser() ? `Bienvenido, ${this.authService.getCurrentUser()?.userName}` : "Login"
-  }
-  
 }

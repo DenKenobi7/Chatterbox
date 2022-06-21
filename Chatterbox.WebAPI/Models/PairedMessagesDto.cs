@@ -1,5 +1,4 @@
 ﻿using Chatterbox.Infrastructure.Dtos;
-using Chatterbox.Infrastructure.Models;
 
 namespace Chatterbox.WebAPI.Models
 {
