@@ -34,7 +34,6 @@ export class RSAService {
   }
 
   async initChatKey(userId:string, companionId:string, chatId: string) {
-    debugger;
     this.initRsaKeys(userId, chatId);
     const encryptionModel = {
       _id:'',

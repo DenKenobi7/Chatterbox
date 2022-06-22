@@ -95,8 +95,9 @@ namespace Chatterbox.WebAPI.Controllers
         public ActionResult<IList<UserGetDto>> GetAvailableUsers()
         {
             var userRole = _roleManager.Roles.Where(r => r.Name == "User").Select(r => r.Id).First();
-            var users = _userManager.Users
-                                .Where(u => u.Roles.Contains(userRole) &&
+            var users = _userManager.Users.ToList();
+
+            users = users.Where(u => u.Roles.Contains(userRole) &&
                                            u.Id.ToString() != _currentUserService.UserId)
                                 .ToList(); 
             
